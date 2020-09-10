@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,9 +52,52 @@ void testVector()
 #endif	// __cplusplus
 }
 
+#ifdef __cplusplus
+#include <string>
+#include <fstream>
+#include <iostream>
+
+#else
+
+#endif // __cplusplus
 
 int main(int const argc, char const* const argv[])
 {
+
+#ifdef __cplusplus
+	//C++file to includes
+//opening and writing to a file in c++
+	std::ofstream file("openpls.txt"); //open writing file
+	std::string test = "hello";
+	file << test << std::endl;
+	file.close();
+#else
+	//opening and writing in C
+//C file to include
+	FILE = fp = fopen("openpls.txt", "w");//open writing file
+#endif //cplusplus
+
+
+	// Image sizes
+	const int image_width = 256;
+	const int image_height = 256;
+	//"Render
+	for (int j = image_height - 1; j >= 0; j--)
+	{
+		//progress indicator in case of infinite loop
+		std::cerr << "\rScanlines Remaining: " << j << ' ' << std::flush;
+		for (int i = 0; i < image_width; i++)
+		{
+			double r = double(i) / (image_width - 1);
+			double g = double(j) / (image_height - 1);
+			float b = 0.25;
+			int ir = static_cast<int>(255.999 * r);
+			int ig = static_cast<int>(255.999 * g);
+			int ib = static_cast<int>(255.999 * b);
+			//without redirection writes out a bunch of pixels
+			std::cout << ir << " " << ig << " " << ib << " " << " \n";
+		}
+	}
 	testVector();
 
 	printf("\n\n");
