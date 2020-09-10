@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 
-#include "gpro/gpro-math/gproVector.h"
+#include "gpro/gpro-math/gproVector.h"//not sure why this doesnt work for me
 
 
 void testVector()
