@@ -3,14 +3,18 @@
 #define colorRGB   vec3
 #define Coords     vec2
 #define A          1.0
+<<<<<<< HEAD
 
 //Created by TekF (Reference for this function https://www.shadertoy.com/view/XsyGzz)
+=======
+// Reference for this function https://www.shadertoy.com/view/XsyGzz
+>>>>>>> origin/lab2
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     fragColor = texture(iChannel0, (floor( (fragCoord*.98 + iResolution.xy*.01 + (fragCoord-iResolution.xy/2.).yx*Coords(-.03,.03)) )+.5) / iResolution.xy);
     //fragColor = texture(iChannel0, (fragCoord*.98 + iResolution.xy*.01 + (fragCoord-iResolution.xy/2.).yx*vec2(-.03,.03)) / iResolution.xy);
     
-    float t = iTime*5.0;//tick rate
+    float t = iTime*2.0;//tick rate
 
     colorRGBA col = colorRGBA(tan(t*colorRGB (13,11,17))*.5+.5,1);//changes color 
     float idx = .0+1.0*smoothstep( 6., 20., length( fragCoord - cos(vec2(11,13)*t)*60. - iResolution.xy/2. ) );//changes pattern
