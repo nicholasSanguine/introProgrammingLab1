@@ -38,12 +38,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor = myEffect1(fragCoord);//Effect 1
 // Background so we dont just get a plain colored screen    
 	colorRGBA layer1 = colorRGBA(rgb(210.0, 233.0, 228.0), A);
-    
 // Math stuff for effect 2B circle
     Coords uv = fragCoord.xy;
     Coords center = (iResolution.xy * 0.5);//grab center
     colorRGB color = rgb(8.0, 55.0, 55.0);//set color (passed in later)
-    float radius = (0.25 * iResolution.y);
+    float radius = (0.25 * iResolution.y) * (sin(iTime) / 0.2);
   	colorRGBA layer2 = myEffect2B(uv, center, radius, color);//Effect 2 
     fragColor = mix(layer1, layer2, layer2.a);
 }
