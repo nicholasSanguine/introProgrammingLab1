@@ -1,3 +1,4 @@
+//Creators are Jason Kmieciak & Nicholas Sanguine
 #define colorRGBA  vec4
 #define colorRGB   vec3
 #define Coords     vec2
@@ -10,7 +11,7 @@ vec4 myEffect0(in Coords fragCoord)
     return vec4(uv, .25, A);
 }
 // Reference for effect 1
-// https://www.shadertoy.com/view/Xss3Dr
+// Created by  4rknova (https://www.shadertoy.com/view/Xss3Dr)
 vec4 myEffect1(in Coords fragCoord, float pie, Coords pie2)
 {
     vec4 effectOne;
@@ -19,7 +20,7 @@ vec4 myEffect1(in Coords fragCoord, float pie, Coords pie2)
     return effectOne;
 }
 // Refference for effect 2
-// https://www.shadertoy.com/view/XsjGDt
+// Created by  jonobr1 (https://www.shadertoy.com/view/XsjGDt)
 // Draw circle at center coord
 vec4 myEffect2B(Coords uv, Coords center, float radius, colorRGB color)
 {
