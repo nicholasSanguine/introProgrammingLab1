@@ -45,4 +45,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float radius = (0.25 * iResolution.y) * (sin(iTime) / 0.2);
   	colorRGBA layer2 = myEffect2B(uv, center, radius, color);//Effect 2 
     fragColor = mix(layer1, layer2, layer2.a);
+//call statement for effect 3 which is color streaks + effect 2b circle effect
+    fragColor = pow(texture(iChannel0, fragCoord / iResolution.xy),colorRGBA (1.5/2.2)+ mix(layer1, layer2, layer2.a));
 }
