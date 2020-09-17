@@ -11,11 +11,11 @@ vec4 myEffect0(in Coords fragCoord)
 }
 // Reference for effect 1
 // https://www.shadertoy.com/view/Xss3Dr
-vec4 myEffect1(in Coords fragCoord)
+vec4 myEffect1(in Coords fragCoord, float pie, Coords pie2)
 {
     vec4 effectOne;
-    Coords xy = floor(5.0 * fragCoord.xy * Coords(iResolution.x / iResolution.y, 1) / iResolution.xy); 
-    effectOne = vec4(colorRGB(mod(xy.x + xy.y, 2.0)), A);
+    Coords xy = floor(5.0 * fragCoord.xy * Coords(pie, A)/ pie2); 
+    effectOne = colorRGBA(colorRGB(mod(xy.x + xy.y, 2.0)), A);
     return effectOne;
 }
 // Refference for effect 2
@@ -23,9 +23,9 @@ vec4 myEffect1(in Coords fragCoord)
 // Draw circle at center coord
 vec4 myEffect2B(Coords uv, Coords center, float radius, colorRGB color)
 {
-	float diameter = length(center - uv) - radius;
-    float t = clamp(diameter, 0.0, 1.0);
-    return vec4 (color, 1.0 - t); 
+    float diameter = length(center - uv) - radius;
+    float t = clamp(diameter, 0.0, A);
+    return vec4 (color, A - t); 
 }
 colorRGB rgb(float r, float b, float g)//normalize the coloration
 {
@@ -35,16 +35,20 @@ colorRGB rgb(float r, float b, float g)//normalize the coloration
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     fragColor = myEffect0(fragCoord);//Effect 0
-    fragColor = myEffect1(fragCoord);//Effect 1
-// Background so we dont just get a plain colored screen    
-	colorRGBA layer1 = colorRGBA(rgb(210.0, 233.0, 228.0), A);
+    Coords pie2 = (iResolution.xy);//Effect 1
+    float pie = (iResolution.x / iResolution.y); 
+    fragColor = myEffect1(fragCoord, pie, pie2);
+// Background so we dont just get a plain colored screen    	
+    colorRGBA layer1 = colorRGBA(rgb(210.0, 233.0, 228.0), A);
+    
 // Math stuff for effect 2B circle
     Coords uv = fragCoord.xy;
     Coords center = (iResolution.xy * 0.5);//grab center
     colorRGB color = rgb(8.0, 55.0, 55.0);//set color (passed in later)
     float radius = (0.25 * iResolution.y) * (sin(iTime) / 0.2);
-  	colorRGBA layer2 = myEffect2B(uv, center, radius, color);//Effect 2 
+    colorRGBA layer2 = myEffect2B(uv, center, radius, color);//Effect 2 
     fragColor = mix(layer1, layer2, layer2.a);
-//call statement for effect 3 which is color streaks + effect 2b circle effect
+    //call statement for effect 3 which is color streaks + effect 2b circle effect
     fragColor = pow(texture(iChannel0, fragCoord / iResolution.xy),colorRGBA (1.5/2.2)+ mix(layer1, layer2, layer2.a));
 }
+    
