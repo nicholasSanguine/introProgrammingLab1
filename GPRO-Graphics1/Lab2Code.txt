@@ -34,13 +34,13 @@ colorRGB rgb(float r, float b, float g)//normalize the coloration
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    fragColor = myEffect0(fragCoord);//Effect 0
-    Coords pie2 = (iResolution.xy);//Effect 1
+    fragColor = myEffect0(fragCoord);//Effect 0  
+    Coords pie2 = (iResolution.xy);
     float pie = (iResolution.x / iResolution.y); 
-    fragColor = myEffect1(fragCoord, pie, pie2);
+    fragColor = myEffect1(fragCoord, pie, pie2);//Effect 1
+
 // Background so we dont just get a plain colored screen    	
     colorRGBA layer1 = colorRGBA(rgb(210.0, 233.0, 228.0), A);
-    
 // Math stuff for effect 2B circle
     Coords uv = fragCoord.xy;
     Coords center = (iResolution.xy * 0.5);//grab center
@@ -48,7 +48,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float radius = (0.25 * iResolution.y) * (sin(iTime) / 0.2);
     colorRGBA layer2 = myEffect2B(uv, center, radius, color);//Effect 2 
     fragColor = mix(layer1, layer2, layer2.a);
-    //call statement for effect 3 which is color streaks + effect 2b circle effect
+    //call statement for effect 3 which is color streaks + 2D circle effect
     fragColor = pow(texture(iChannel0, fragCoord / iResolution.xy),colorRGBA (1.5/2.2)+ mix(layer1, layer2, layer2.a));
 }
     
