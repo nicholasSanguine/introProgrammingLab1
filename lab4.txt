@@ -60,12 +60,21 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
     // w = 0 because it represents a direction; can ignore when using
     rayDirection = asOffset(viewport - eyePosition);
 }
-
+struct lLights//creating a light with these structs
+{
+   vec4 position;//make a position in space
+   float radius;
+};
 struct sSphere
 {
 	float radius;
     vec4 center;
 };
+    void initLights(out lLights light, in vec3 center, in float radius)//Make P_light
+{
+    light.position = asPoint(center);//asPoint makes it so we dont have to worry about vec4
+    light.radius = radius;
+}
     
     void initSphere(out sSphere sphere, in vec3 center, in float radius)
 {
@@ -87,9 +96,11 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     //return rayDirection;
 	
     // SCENE
+    // Struct objects
     sSphere sphere;
-    initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
-    
+    lLights light;
+    initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);//initializing sphere
+    initLights(light, vec3(0.0,0.0,4.0), 0.2);
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
     float lSq = lenSq(dp.xy);
@@ -97,15 +108,17 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     if (lSq <= rSq) 
     { 
         dp.z = rSq - lSq;//calculated in our if statement & square rooted
-        vec3 position = sphere.center.xyz + vec3 (dp.x,dp.y, sqrt(dp.z));
+        vec3 position = sphere.center.xyz + vec3 (dp.x,dp.y, sqrt(dp.z));//P_surface
         vec3 normal_frag = (position - sphere.center.xyz) / sphere.radius;//normalize(position-sphere.center.xyz); <- inefficient  normalize takes the formula and divides by length
+        vec3 lightVector = normalize(position - light.position.xyz)/light.radius;
+        vec3 cosine = dot(normal_frag, lightVector);//not sure what my issue is
         return vec4 (normal_frag *0.5 + 0.5, 1.0);
     }
     
 	// BACKGROUND
 	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
 //	return vec4(mix(warm, cool, rayDirection.y), 1.0);
-	return vec4(0.5);
+    return vec4(0.5);
 }
 
 // mainImage: process the current pixel (exactly one call per pixel)
