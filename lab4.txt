@@ -73,7 +73,7 @@ struct sSphere
     void initLights(out lLights light, in vec3 center, float intensity)//Make P_light
 {
     light.position = asPoint(center);//asPoint makes it so we dont have to worry about vec4
-    light.intensity = intnsity;
+    light.intensity = intensity;
 }
     
     void initSphere(out sSphere sphere, in vec3 center, in float radius)
@@ -100,7 +100,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     sSphere sphere;
     lLights light;
     initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);//initializing sphere
-    initLights(light, vec3(-1.0,-2.0,-5.0), 0.5);
+    initLights(light, vec3(-3.0, -4.0, -6.0), 5.85);
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
     float lSq = lenSq(dp.xy);
@@ -114,10 +114,11 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         vec3 lightVector = normalize(position - light.position.xyz);
         float diffuseCoefficient = dot(normal_frag, lightVector);//dot operator returns float
         float returnMe = max(0.0,diffuseCoefficient);
-    //    return vec4(returnMe,returnMe, returnMe, 1); //returns diffusion
+       // return vec4(returnMe,returnMe, returnMe, 1); //returns diffusion
         // Attenuation
-        vec3 attenuatedIntensity = 1.0/(1.0 + lightVector / light.intensity + (lightVector * lightVector) / (light.intensity * light.intensity) );
-    	return vec4(attenuatedIntensity, 1);
+        float d = distance(lightVector, position);
+        float attenuatedIntensity = 1.0/(1.0 + d / light.intensity + (d * d) / (light.intensity * light.intensity) );
+        return vec4(attenuatedIntensity + returnMe , attenuatedIntensity+ returnMe, attenuatedIntensity + returnMe, 1);
     }
     
 	// BACKGROUND
