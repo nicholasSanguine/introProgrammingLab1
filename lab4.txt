@@ -63,15 +63,17 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
 struct lLights//creating a light with these structs
 {
    vec4 position;//make a position in space
+   float intensity; 
 };
 struct sSphere
 {
 	float radius;
     vec4 center;
 };
-    void initLights(out lLights light, in vec3 center)//Make P_light
+    void initLights(out lLights light, in vec3 center, float intensity)//Make P_light
 {
     light.position = asPoint(center);//asPoint makes it so we dont have to worry about vec4
+    light.intensity = intnsity;
 }
     
     void initSphere(out sSphere sphere, in vec3 center, in float radius)
@@ -98,7 +100,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     sSphere sphere;
     lLights light;
     initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);//initializing sphere
-    initLights(light, vec3(-1.0,-2.0,-5.0));
+    initLights(light, vec3(-1.0,-2.0,-5.0), 0.5);
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
     float lSq = lenSq(dp.xy);
@@ -108,11 +110,14 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         dp.z = rSq - lSq;//calculated in our if statement & square rooted
         vec3 position = sphere.center.xyz + vec3 (dp.x,dp.y, sqrt(dp.z));//P_surface
         vec3 normal_frag = (position - sphere.center.xyz) / sphere.radius;//normalize(position-sphere.center.xyz); <- inefficient  normalize takes the formula and divides by length
+        // math for diffisuion
         vec3 lightVector = normalize(position - light.position.xyz);
-        float cosine = dot(normal_frag, lightVector);//not sure what my issue is
-        float returnMe = max(0.0,cosine);
-        return vec4(0.8 * returnMe, 0.1 * returnMe, returnMe, 1);
-    //    return vec4 (normal_frag *0.5 + 0.5, 1.0);
+        float diffuseCoefficient = dot(normal_frag, lightVector);//dot operator returns float
+        float returnMe = max(0.0,diffuseCoefficient);
+    //    return vec4(returnMe,returnMe, returnMe, 1); //returns diffusion
+        // Attenuation
+        vec3 attenuatedIntensity = 1.0/(1.0 + lightVector / light.intensity + (lightVector * lightVector) / (light.intensity * light.intensity) );
+    	return vec4(attenuatedIntensity, 1);
     }
     
 	// BACKGROUND
