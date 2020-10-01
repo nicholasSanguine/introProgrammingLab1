@@ -91,7 +91,7 @@ float lenSq(vec2 x)
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
-vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
+vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport)
 {
     // DUMMY RESULT: OUTPUT RAY DIRECTION AS-IS
     //  -> what does the ray look like as color?
@@ -121,11 +121,16 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         float d = distance(lightVector, position);
         float attenuatedIntensity = 1.0/(1.0 + d / light.intensity + (d * d) / (light.intensity * light.intensity) );
         float diffuseIntensity = attenuatedIntensity * returnMe;
-        //return vec4(diffuseIntensity , diffuseIntensity, diffuseIntensity, 1);//returning attenuation
+//        return vec4(diffuseIntensity , diffuseIntensity, diffuseIntensity, 1);//returning attenuation
         // FINAL COLOR
-        vec3 finalColor = diffuseIntensity * normal_frag * light.color;
-        return vec4 (finalColor, 1);
-        
+        vec3 finalColor = diffuseIntensity * normal_frag * light.color; // C = I_D * C_D * C_L
+//        return vec4 (finalColor, 1);// return final color
+        // PHONG REFLECTANCE
+        vec3 viewVector = normalize(viewport - normal_frag);//V
+        vec3 reflectedLight = reflect(lightVector, normal_frag);//R
+        float specularCoefficient = dot(viewVector, reflectedLight);//specular coefficient
+        float returnSpec = max(0.0, specularCoefficient);
+        return vec4 (returnSpec,returnSpec,returnSpec,1);// return Phong Reflectance
     }
     
 	// BACKGROUND
@@ -156,5 +161,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     	             fragCoord, iResolution.xy);
     calcRay(rayDirection, rayOrigin, vec3(0.0), viewport);
     
-    fragColor += calcColor(rayDirection, rayOrigin);
+    fragColor += calcColor(rayDirection, rayOrigin, viewport);
 }
