@@ -127,17 +127,18 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport)
 //        return vec4 (finalColor, 1);// return final color
         // PHONG REFLECTANCE
         vec3 viewVector = normalize(viewport - normal_frag);//V
-        vec3 reflectedLight = reflect(lightVector * -1.0, normal_frag);//R
+        vec3 reflectedLight = reflect(lightVector, normal_frag);//R
         float specularCoefficient = dot(viewVector, reflectedLight);//specular coefficient
         float returnSpec = max(0.0, specularCoefficient);
         float phongExponent = 256.0;
-        float returnSpecular = pow(returnSpec, phongExponent);
+//        float returnSpecular = pow(returnSpec, phongExponent);
 //        return vec4 (returnSpecular,returnSpecular,returnSpecular,1);// return Phong Reflectance
         // PHONG FINAL COLOR
         float globalAmbient = 0.1;
         vec3 surfaceColor = vec3(0.0,0.75,0.8);
+        float returnSpecular = pow(returnSpec, phongExponent);
         vec3 finalPhong = globalAmbient * normal_frag +(diffuseIntensity * surfaceColor + returnSpecular * vec3 (0,1,0)) * light.color;//I_A * C_A + ( I_D * C_D + I_S * C_S) C_L
-//   		return vec4 (finalPhong, 1);//return final Phong Reflectance
+    	return vec4 (finalPhong, 1);
         // BLINN PHONG
         float blinnExponent = phongExponent * 4.0;
         vec3 halfwayVector = normalize(lightVector + viewVector);
@@ -147,8 +148,31 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport)
 //        return vec4 (blinnPhong, blinnPhong,blinnPhong,1);// return blinnPhong
         // BLINN PHONG FINAL COLOR
         vec3 finalBlinn = globalAmbient * normal_frag +(diffuseIntensity * surfaceColor + blinnPhong * vec3 (0,1,0)) * light.color;//I_A * C_A + ( I_D * C_D + I_S * C_S) C_L
-//		return vec4 (finalBlinn, 1);// return final Blinn
-        //MULTIPLE LIGHTS
+		return vec4 (finalBlinn, 1);// return final Blinn
+        // Multiple lights and math
+        lLights lightTwo;
+        initLights(lightTwo, vec3(3.0, 2.0, 7.0), 7.5, vec3(0,1.0,1.0));
+        //diffuse intensity
+        vec3 lightVectorTwo = normalize(position - lightTwo.position.xyz);
+        float diffuseCoefficientTwo = dot(normal_frag, lightVectorTwo);//dot operator returns float
+        float returnMeTwo = max(0.0,diffuseCoefficientTwo);
+        float dTwo = distance(lightVectorTwo, position);
+        float attenuatedIntensityTwo = 1.0/(1.0 + d / light.intensity + (d * d) / (light.intensity * light.intensity) );
+        float diffuseIntensityTwo = attenuatedIntensityTwo * returnMeTwo;
+        //specular intensity
+        vec3 reflectedLightTwo = reflect(lightVectorTwo, normal_frag);//R
+        float specularCoefficientTwo = dot(viewVector, reflectedLightTwo);//specular coefficient
+        float returnSpecTwo =max(0.0, specularCoefficientTwo);
+        float returnSpecularTwo = pow(returnSpecTwo, phongExponent);
+//        return vec4(returnSpecular, returnSpecular, returnSpecular,1.0);
+        vec3 finalPhongTwo = globalAmbient * normal_frag +(diffuseIntensityTwo * surfaceColor + returnSpecularTwo * vec3 (0,1,0)) * lightTwo.color;
+//        return vec4(finalPhongTwo, 1.0);
+        // Part 6 final color
+        vec3 globalColor = vec3(0.0,1.0,1.0);
+        vec3 globalTotal = globalAmbient * globalColor;
+        vec3 unrollTotal = (diffuseIntensity * normal_frag + returnSpecular * vec3(1.0, 1.0,0.3));
+		unrollTotal = unrollTotal *(diffuseIntensityTwo * normal_frag + finalPhongTwo * vec3 (1.0,1.0,0.3));
+//        return vec4  (globalTotal + unrollTotal * light.color *lightTwo.color,1);
     }
     
 	// BACKGROUND
